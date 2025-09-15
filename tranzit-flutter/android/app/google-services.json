@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1032077500528",
+    "project_id": "tranzit-5ce96",
+    "storage_bucket": "tranzit-5ce96.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1032077500528:android:c8a1c382268dabdf5814b5",
+        "android_client_info": {
+          "package_name": "com.CodeCommuters.tranzit"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_unV_0Awuf_yMFA-91F4ckqGdVn5SWPA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
