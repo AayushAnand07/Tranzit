@@ -1,10 +1,12 @@
 import express, { Request, Response } from "express";
 import { PrismaClient } from './generated/prisma'
+import { withAccelerate } from '@prisma/extension-accelerate'
 import userRouter from './controller/user.controller'
 
 
 const app = express();
-const prisma = new PrismaClient()
+
+const prisma = new PrismaClient().$extends(withAccelerate())
 
 const PORT = process.env.PORT || 3000;
 
