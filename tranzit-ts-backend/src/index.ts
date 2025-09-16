@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import { PrismaClient } from './generated/prisma'
 import { withAccelerate } from '@prisma/extension-accelerate'
 import userRouter from './controller/user.controller'
+import routesRouter from './controller/routes.controller'
 
 
 const app = express();
@@ -15,6 +16,7 @@ app.use(express.json());
 
 
 app.use('/api/v1/users/',userRouter);
+app.use('/api/v1/routes/',routesRouter);
 
 
 app.get("/users", async (req, res) => {
