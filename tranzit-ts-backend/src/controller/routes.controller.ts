@@ -35,14 +35,12 @@ router.get("/search", async (req, res) => {
       },
     });
     const results = [];
-    console.log(routes);
 
     for (const route of routes) {
       for (const vehicle of route.vehicles) {
         const fromOrder = route.routeStops.find(rs => rs.stopId === fromStop.id)?.order;
         const toOrder   = route.routeStops.find(rs => rs.stopId === toStop.id)?.order;
 
-        console.log(fromOrder, toOrder, vehicle.vehicleId);
 
         if (!fromOrder || !toOrder) continue;
 
@@ -57,6 +55,7 @@ router.get("/search", async (req, res) => {
               transport: route.transport,
             },
             vehicle: {
+              id: vehicle.id,
               vehicleId: vehicle.vehicleId,
               departure: vehicle.departure,
               arrival: vehicle.arrival,
