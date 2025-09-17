@@ -10,39 +10,32 @@ class TicketClipper extends CustomClipper<Path> {
   Path getClip(Size size) {
     final path = Path();
 
-    // Start top left
     path.moveTo(0, 0);
 
-    // Top edge to right
+
     path.lineTo(size.width, 0);
 
-    // Right edge line to top of cutout
     path.lineTo(size.width, size.height / 2 - cutRadius);
 
-    // Right cutout (semicircle)
+
     path.arcToPoint(
       Offset(size.width, size.height / 2 + cutRadius),
       radius: Radius.circular(cutRadius),
       clockwise: false,
     );
 
-    // Right edge down to bottom
     path.lineTo(size.width, size.height);
 
-    // Bottom edge to left
     path.lineTo(0, size.height);
 
-    // Left edge line to bottom of cutout
     path.lineTo(0, size.height / 2 + cutRadius);
 
-    // Left cutout (semicircle)
     path.arcToPoint(
       Offset(0, size.height / 2 - cutRadius),
       radius: Radius.circular(cutRadius),
       clockwise: false,
     );
 
-    // Left edge line to top
     path.lineTo(0, 0);
 
     path.close();

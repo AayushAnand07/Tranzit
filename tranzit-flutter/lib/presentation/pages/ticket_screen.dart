@@ -6,7 +6,6 @@ class ModernTicketScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Example QR and ticket data
     final qrData = "09324|Mumbai→Pune|Indb Pune Spl|12:20|3:10|2nd AC|2 Adults|Pet:Yes|Disability:No|Food:No";
 
     final Color mainPurple = Color(0xFF5867DD); // Your theme color

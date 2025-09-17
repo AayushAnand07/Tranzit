@@ -18,7 +18,7 @@ class _FirstTimeRegistrationScreenState extends State<FirstTimeRegistrationScree
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Welcome, $name! Registration complete.')),
       );
-      // Navigate or save name logic here
+
     }
   }
 

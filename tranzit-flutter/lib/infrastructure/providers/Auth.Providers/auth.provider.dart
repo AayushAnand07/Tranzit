@@ -1,6 +1,3 @@
-
-
-
 import 'dart:async';
 import 'dart:io';
 
@@ -9,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tranzit/home_screen.dart';
 
-import '../../../presentation/pages/login_screen.dart';
+
 import '../../../presentation/pages/otp_screen.dart';
 import '../../../presentation/components/custom_snackbar.dart';
 import '../../../presentation/pages/profile_name_screen.dart';
@@ -39,7 +36,6 @@ class LoginAuthenticationProvider with ChangeNotifier{
   final TextEditingController otpController = TextEditingController();
 
   LoginAuthenticationProvider() {
-    // Listen for OTP input changes
     otpController.addListener(() {
       _isOtpComplete = otpController.text.length == 6;
       notifyListeners();
@@ -163,14 +159,13 @@ class LoginAuthenticationProvider with ChangeNotifier{
         isFirstLogin = newUser;
       }
 
-      // Reset OTP state
       _timer?.cancel();
       otpController.clear();
       _isOtpComplete = false;
       _secondsLeft = 14;
       _replace = false;
 
-      // Navigate depending on first login
+
       if (isFirstLogin) {
         Navigator.pushReplacement(
           ctx,

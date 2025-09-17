@@ -262,7 +262,6 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                }
              ),
               SizedBox(height: 18),
-              // Get Help link
               Text.rich(
                 TextSpan(
                   text: 'Having trouble logging in? ',

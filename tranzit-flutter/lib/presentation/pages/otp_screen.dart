@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tranzit/infrastructure/providers/Auth.Providers/auth.provider.dart';
 import 'package:tranzit/presentation/pages/login_screen.dart';
 
@@ -52,14 +51,14 @@ class _OtpScreenState extends State<OtpScreen> {
                 ),
                 const SizedBox(height: 8),
 
-                // 📱 Info text
+
                 const Text(
                   'Sent via SMS to 9012345678',
                   style: TextStyle(fontSize: 16, color: Colors.grey),
                 ),
                 const SizedBox(height: 32),
 
-                // 🔢 OTP input
+
                 Center(
                   child: Pinput(
                     length: 6,
@@ -99,7 +98,6 @@ class _OtpScreenState extends State<OtpScreen> {
                 ),
                 const SizedBox(height: 16),
 
-                // ⏳ Timer text
                 Text(
                   provider.replace
                       ? "Try fill yourself"
@@ -136,7 +134,6 @@ class _OtpScreenState extends State<OtpScreen> {
 
                 const Spacer(),
 
-                // ❓ Help text
                 Center(
                   child: Text.rich(
                     TextSpan(
