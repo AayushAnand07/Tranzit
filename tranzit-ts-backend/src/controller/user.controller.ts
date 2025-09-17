@@ -11,15 +11,10 @@ router.post('/create', async (req,res)=> {
     try{
 
     const {id,name} =  req.body;
-    const user =  await prisma.user.create({
-        data:{
-            id,
-            name
-        }
-    })
+    const user= userRepo.createUser(id,name);
     res.status(201).json(user)
 }
-catch(err){
+catch(err){  
      res.status(400).json({ error: "User creation failed", details: err })
 }
 })
