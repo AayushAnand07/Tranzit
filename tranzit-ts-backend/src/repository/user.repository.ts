@@ -1,4 +1,3 @@
-// src/modules/user/user.repository.ts
 import { PrismaClient ,User} from '../generated/prisma'
 
 const prisma = new PrismaClient();

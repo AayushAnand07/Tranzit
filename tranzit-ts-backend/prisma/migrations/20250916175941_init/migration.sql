@@ -1,8 +1,25 @@
 -- CreateEnum
+CREATE TYPE "public"."Role" AS ENUM ('USER', 'ADMIN');
+
+-- CreateEnum
+CREATE TYPE "public"."RouteDirection" AS ENUM ('FORWARD', 'REVERSE');
+
+-- CreateEnum
 CREATE TYPE "public"."TransportType" AS ENUM ('METRO', 'MTC');
 
 -- CreateEnum
 CREATE TYPE "public"."TicketStatus" AS ENUM ('BOOKED', 'CHECKED_IN', 'CHECKED_OUT');
+
+-- CreateTable
+CREATE TABLE "public"."User" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "role" "public"."Role" NOT NULL DEFAULT 'USER',
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateTable
 CREATE TABLE "public"."Stop" (
@@ -39,6 +56,7 @@ CREATE TABLE "public"."Vehicle" (
     "departure" TIMESTAMP(3) NOT NULL,
     "arrival" TIMESTAMP(3) NOT NULL,
     "price" DOUBLE PRECISION NOT NULL,
+    "direction" "public"."RouteDirection" NOT NULL DEFAULT 'FORWARD',
 
     CONSTRAINT "Vehicle_pkey" PRIMARY KEY ("id")
 );
