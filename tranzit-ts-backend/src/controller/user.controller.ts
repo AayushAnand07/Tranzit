@@ -9,8 +9,7 @@ const userRepo= new UserRepository();
 
 router.post('/create', async (req,res)=> {
     try{
-
-    const {id,name} =  req.body;
+        const {id,name} =  req.body;
     const user= userRepo.createUser(id,name);
     res.status(201).json(user)
 }

@@ -4,9 +4,10 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tranzit/home_screen.dart';
 
 
+
+import '../../../presentation/pages/NewHomeScreen.dart';
 import '../../../presentation/pages/otp_screen.dart';
 import '../../../presentation/components/custom_snackbar.dart';
 import '../../../presentation/pages/profile_name_screen.dart';
@@ -89,32 +90,27 @@ class LoginAuthenticationProvider with ChangeNotifier{
     _isLoading = true;
     notifyListeners();
 
-    try{
+    try {
       await FirebaseAuth.instance.verifyPhoneNumber(
         phoneNumber: "+91$phoneNumber",
         verificationCompleted: (PhoneAuthCredential credential) async {
-          final UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
-          final bool isNewUser = userCredential.additionalUserInfo?.isNewUser ?? false;
-          print("this is new user $isNewUser");
-          print("this is new user $userCredential");
-          if(isNewUser){
-            SharedPreferences prefs = await SharedPreferences.getInstance();
-            await prefs.setBool('isFirstLogin', true);
-          }else{
-            SharedPreferences prefs = await SharedPreferences.getInstance();
-            await prefs.setBool('isFirstLogin', false);
-          }
-          print("Phone verified automatically");
+          // Auto verification: directly sign in
+          final UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+
+          await _handleSuccessfulLogin(ctx, userCredential);
         },
         verificationFailed: (FirebaseAuthException e) {
-          throw FirebaseAuthException(message: "Verification Failed ${e.message}",code: "404");
+          throw FirebaseAuthException(
+            message: "Verification Failed ${e.message}",
+            code: "404",
+          );
         },
         codeSent: (verificationId, int? resendToken) {
           _verificationId = verificationId;
-          print("OTP sent. Verification ID saved: $_verificationId");
-          _isLoading = false; // reset immediately
-
+          _isLoading = false;
           notifyListeners();
+
           Navigator.pushReplacement(
             ctx,
             MaterialPageRoute(
@@ -122,23 +118,18 @@ class LoginAuthenticationProvider with ChangeNotifier{
             ),
           );
         },
-
         codeAutoRetrievalTimeout: (verificationId) {
           _verificationId = verificationId;
         },
       );
+
       startTimer();
-    }
-    catch (e) {
+    } catch (e) {
       _handleError(ctx, e);
     }
   }
 
-
-
   Future<void> verifyOtp(String otp, BuildContext ctx) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
     _isLoading = true;
     notifyListeners();
 
@@ -151,36 +142,8 @@ class LoginAuthenticationProvider with ChangeNotifier{
       final UserCredential userCredential =
       await FirebaseAuth.instance.signInWithCredential(credential);
 
+      await _handleSuccessfulLogin(ctx, userCredential);
 
-      bool? isFirstLogin = prefs.getBool('isFirstLogin');
-      if (isFirstLogin == null) {
-        final bool newUser = userCredential.additionalUserInfo?.isNewUser ?? false;
-        await prefs.setBool('isFirstLogin', newUser);
-        isFirstLogin = newUser;
-      }
-
-      _timer?.cancel();
-      otpController.clear();
-      _isOtpComplete = false;
-      _secondsLeft = 14;
-      _replace = false;
-
-
-      if (isFirstLogin) {
-        Navigator.pushReplacement(
-          ctx,
-          MaterialPageRoute(
-            builder: (context) => FirstTimeRegistrationScreen(),
-          ),
-        );
-      } else {
-        Navigator.pushReplacement(
-          ctx,
-          MaterialPageRoute(
-            builder: (context) => HomeScreen(),
-          ),
-        );
-      }
     } on FirebaseAuthException catch (e) {
       _handleError(ctx, e);
     } catch (e) {
@@ -188,6 +151,34 @@ class LoginAuthenticationProvider with ChangeNotifier{
     } finally {
       _isLoading = false;
       notifyListeners();
+    }
+  }
+
+
+  Future<void> _handleSuccessfulLogin(
+      BuildContext ctx, UserCredential userCredential) async {
+    final isNewUser = userCredential.additionalUserInfo?.isNewUser ?? false;
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isFirstLogin', isNewUser);
+
+    // reset state
+    _timer?.cancel();
+    otpController.clear();
+    _isOtpComplete = false;
+    _secondsLeft = 14;
+    _replace = false;
+
+    if (isNewUser) {
+      Navigator.pushReplacement(
+        ctx,
+        MaterialPageRoute(builder: (context) => FirstTimeRegistrationScreen()),
+      );
+    } else {
+      Navigator.pushReplacement(
+        ctx,
+        MaterialPageRoute(builder: (context) => NewHomeScreen()),
+      );
     }
   }
 

@@ -1,4 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:tranzit/home_screen.dart';
+
+import '../../infrastructure/providers/Auth.Providers/profile.provider.dart';
 
 class FirstTimeRegistrationScreen extends StatefulWidget {
   const FirstTimeRegistrationScreen({Key? key}) : super(key: key);
@@ -10,18 +15,33 @@ class FirstTimeRegistrationScreen extends StatefulWidget {
 class _FirstTimeRegistrationScreenState extends State<FirstTimeRegistrationScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
+ String uid = FirebaseAuth.instance.currentUser!.uid;
 
-  void _submit() {
-    if (_formKey.currentState?.validate() ?? false) {
-      final name = _nameController.text.trim();
-      print('Name entered: $name');
+void _submit(BuildContext context) async {
+  if (_formKey.currentState?.validate() ?? false) {
+    final name = _nameController.text;
+    print(uid);
+    final provider = Provider.of<CreateProfileProvider>(context, listen: false);
+    await provider.postProfile(uid, name);
+
+
+    if (!provider.isLoading && provider.error.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Welcome, $name! Registration complete.')),
       );
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>HomeScreen()),
+          );
 
+    } else if (provider.error.isNotEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(provider.error)),
+      );
     }
   }
-
+}
   @override
   void dispose() {
     _nameController.dispose();
@@ -30,16 +50,18 @@ class _FirstTimeRegistrationScreenState extends State<FirstTimeRegistrationScree
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<CreateProfileProvider>(context);
     final primaryColor = Colors.teal.shade700;
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 48),
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center ,
             children: [
               Icon(Icons.person_outline, size: 100, color: primaryColor.withOpacity(0.7)),
               const SizedBox(height: 24),
@@ -80,14 +102,18 @@ class _FirstTimeRegistrationScreenState extends State<FirstTimeRegistrationScree
                     return null;
                   },
                   textInputAction: TextInputAction.done,
-                  onFieldSubmitted: (_) => _submit(),
+                  onFieldSubmitted: (_) => _submit(context),
                 ),
               ),
               const SizedBox(height: 40),
-              SizedBox(
+              (provider.isLoading)?CircularProgressIndicator(backgroundColor: primaryColor,):SizedBox(
                 width: screenWidth,
                 child: ElevatedButton(
-                  onPressed: _submit,
+                  onPressed:() async {
+                    if (_formKey.currentState?.validate() ?? false) {
+                   _submit(context);
+                  }
+                  },
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 18),
                     backgroundColor: primaryColor,
