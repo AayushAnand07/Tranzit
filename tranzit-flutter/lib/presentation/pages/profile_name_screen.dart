@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tranzit/home_screen.dart';
+import 'package:tranzit/presentation/pages/NewHomeScreen.dart';
 
 import '../../infrastructure/providers/Auth.Providers/profile.provider.dart';
 
@@ -23,16 +25,18 @@ void _submit(BuildContext context) async {
     print(uid);
     final provider = Provider.of<CreateProfileProvider>(context, listen: false);
     await provider.postProfile(uid, name);
-
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('username', name);
 
     if (!provider.isLoading && provider.error.isEmpty) {
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Welcome, $name! Registration complete.')),
       );
-      Navigator.pushReplacement(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) =>HomeScreen()),
+            builder: (context) =>NewHomeScreen()),
           );
 
     } else if (provider.error.isNotEmpty) {

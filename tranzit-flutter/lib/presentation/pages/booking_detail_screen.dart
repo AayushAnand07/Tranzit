@@ -1,31 +1,45 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:pay/pay.dart';
 import 'package:provider/provider.dart';
 import 'package:timeline_tile/timeline_tile.dart';
+import 'package:tranzit/presentation/pages/ticket_detail_screen.dart';
 
+import '../../infrastructure/providers/Auth.Providers/booking.provider.dart';
 import '../../infrastructure/providers/Auth.Providers/route.provider.dart';
 import '../components/trip_info_Card.dart';
- // Adjust filename/path if needed
 
-class BookingDetailPage extends StatelessWidget {
+class BookingDetailPage extends StatefulWidget {
   final dynamic routes;
   final dynamic vehicles;
+  final dynamic routeStop;
 
-  const BookingDetailPage(this.routes, this.vehicles, {Key? key}) : super(key: key);
+  const BookingDetailPage(this.routes, this.vehicles, this.routeStop, {Key? key}) : super(key: key);
 
   static const Color darkTeal = Color(0xFF165E5A);
 
   @override
+  State<BookingDetailPage> createState() => _BookingDetailPageState();
+}
+
+class _BookingDetailPageState extends State<BookingDetailPage> {
+  @override
   Widget build(BuildContext context) {
-    final stops = context.watch<RouteProvider>().betweenStops;
-    final stopsCount = context.watch<RouteProvider>().betweenCount;
+    final routeProvider = Provider.of<RouteProvider>(context);
+    final stops = routeProvider.betweenStops;
+    final stopsCount = routeProvider.betweenCount;
+    final bookingProvider = Provider.of<BookingProvider>(context, listen: false);
 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text("Booking Details ",style:TextStyle(color: Colors.white,fontWeight: FontWeight.w500),),
-        backgroundColor: darkTeal,
+        title: const Text(
+          "Booking Details",
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+        ),
+        backgroundColor: BookingDetailPage.darkTeal,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back,color: Colors.white,),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
         elevation: 0,
@@ -38,7 +52,7 @@ class BookingDetailPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TripInfoCard(routes, vehicles,stopsCount),
+                  TripInfoCard(widget.routes, widget.vehicles, stopsCount),
                   const SizedBox(height: 18),
                   const Text(
                     "Metro Map",
@@ -66,10 +80,14 @@ class BookingDetailPage extends StatelessWidget {
 
                       Color indicatorColor = Colors.grey[600]!;
                       TextStyle nameStyle = const TextStyle(
-                          color: Colors.black, fontWeight: FontWeight.w600, fontSize: 16);
+                        color: Colors.black,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      );
+
                       if (index == 0 || index == stops.length - 1) {
-                        indicatorColor = darkTeal;
-                        nameStyle = nameStyle.copyWith(color: darkTeal);
+                        indicatorColor = BookingDetailPage.darkTeal;
+                        nameStyle = nameStyle.copyWith(color: BookingDetailPage.darkTeal);
                       } else if (stopName.toLowerCase().contains('flower')) {
                         indicatorColor = Colors.red[400]!;
                         nameStyle = nameStyle.copyWith(color: indicatorColor);
@@ -86,14 +104,8 @@ class BookingDetailPage extends StatelessWidget {
                           width: 25,
                           color: indicatorColor,
                         ),
-                        beforeLineStyle: LineStyle(
-                          color: Colors.grey[300]!,
-                          thickness: 3,
-                        ),
-                        afterLineStyle: LineStyle(
-                          color: Colors.grey[300]!,
-                          thickness: 3,
-                        ),
+                        beforeLineStyle: LineStyle(color: Colors.grey[300]!, thickness: 3),
+                        afterLineStyle: LineStyle(color: Colors.grey[300]!, thickness: 3),
                         endChild: Padding(
                           padding: const EdgeInsets.only(left: 8, top: 12, bottom: 12),
                           child: Text(stopName, style: nameStyle),
@@ -111,20 +123,16 @@ class BookingDetailPage extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white,
               boxShadow: const [
-                BoxShadow(
-                  color: Colors.black12,
-                  blurRadius: 10,
-                  offset: Offset(0, -2),
-                ),
+                BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, -2)),
               ],
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  '\$58.00',
-                  style: TextStyle(
-                    color: darkTeal,
+                Text(
+                  '₹ ${widget.vehicles['price']?.toStringAsFixed(2) ?? '0.00'}',
+                  style: const TextStyle(
+                    color: BookingDetailPage.darkTeal,
                     fontWeight: FontWeight.bold,
                     fontSize: 30,
                   ),
@@ -132,22 +140,52 @@ class BookingDetailPage extends StatelessWidget {
                 SizedBox(
                   width: 180,
                   height: 48,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: darkTeal,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                  child: GooglePayButton(
+                    paymentConfigurationAsset: 'payment_config_google_pay.json',
+                    paymentItems: [
+                      PaymentItem(
+                        label: 'Total',
+                        amount: '${widget.vehicles['price']?.toStringAsFixed(2) ?? '0.00'}',
+                        status: PaymentItemStatus.final_price,
                       ),
-                    ),
-                    child: const Text(
-                      "BOOK TICKET",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 19,
-                      ),
-                    ),
-                    onPressed: () {},
+                    ],
+                    type: GooglePayButtonType.book,
+                    onError: (error) {
+                      debugPrint("Payment Failed: $error");
+                      ScaffoldMessenger.of(context)
+                          .showSnackBar(SnackBar(content: Text("Payment Failed ❌: $error")));
+                    },
+                    onPaymentResult: (result) async {
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (context) => const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+                      debugPrint("Payment Result: $result");
+                      final uid = FirebaseAuth.instance.currentUser?.uid;
+                      if (uid != null) {
+                        await bookingProvider
+                            .fetchTicketBookingResponse(
+                          vehicleId: widget.vehicles['id'],
+                          fromStopName: routeProvider.getStopIdByName(widget.routeStop['fromStop'])!,
+                          toStopName: routeProvider.getStopIdByName(widget.routeStop['toStop'])!,
+                          userId: uid,
+                        )
+                            .then((_) {
+                          Navigator.of(context).pop();
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => TicketDetailsPage(
+                                  widget.routes, widget.vehicles, widget.routeStop, bookingProvider.qrPayload!),
+                            ),
+                          );
+                        });
+                      }
+                    },
+                    loadingIndicator: const Center(child: CircularProgressIndicator()),
                   ),
                 ),
               ],

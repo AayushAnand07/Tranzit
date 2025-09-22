@@ -40,6 +40,7 @@ class RouteProvider with ChangeNotifier {
     try {
       final data = await _routeService.getaAllStops();
       _allStops = List<Map<String, dynamic>>.from(data);
+      print("This is all STops$_allStops");
     } catch (e) {
       print("Error fetching stops: $e");
       _allStops = [];
@@ -79,6 +80,7 @@ class RouteProvider with ChangeNotifier {
     required int routeId,
     required String from,
     required String to,
+    required String direction
   }) async {
     _isLoading = true;
     notifyListeners();
@@ -88,6 +90,7 @@ class RouteProvider with ChangeNotifier {
         routeId: routeId,
         from: from,
         to: to,
+        direction: direction,
       );
       print("Result $result");
 
@@ -118,11 +121,17 @@ class RouteProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // void setTransportTypes(List<String> types) {
-  //   _transportTypes = types;
-  //   notifyListeners();
-  // }
 
+  int? getStopIdByName(String stopName) {
+    try {
+      final stop = _allStops.firstWhere(
+            (s) => s['name'].toString().toLowerCase() == stopName.toLowerCase(),
+      );
+      return stop['id'] as int;
+    } catch (e) {
+      return null;
+    }
+  }
 
 
 

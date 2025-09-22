@@ -238,6 +238,8 @@ class _SearchCardState extends State<SearchCard> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () async  {
+                  final routeProvider = Provider.of<RouteProvider>(context, listen: false);
+
                     if ((selectedFromStop == null && selectedToStop == null) ||
                         (selectedFromStop != null && selectedToStop != null && selectedFromStop == selectedToStop) ||
                         (!isBusSelected && !isMetroSelected)) {
@@ -251,18 +253,29 @@ class _SearchCardState extends State<SearchCard> {
                     if (isBusSelected) transportType ='MTC';
                     if (isMetroSelected) transportType='METRO';
 
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (context) => const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
 
-                    final routeProvider = Provider.of<RouteProvider>(context, listen: false);
+
 
                     try {
                      await routeProvider.fetchStopsForRoute(
                         from: selectedFromStop ?? '',
                         to: selectedToStop ?? '',
                         transportType: transportType,
-                      ).then((value) => Navigator.push(
+                      ).then((value) {
+
+                         Navigator.of(context).pop();
+                        Navigator.push(
                        context,
                        MaterialPageRoute(builder: (context) => SearchResultsScreen()),
-                     ));
+                     );
+                     });
 
                     } catch (error) {
                       if (mounted) {

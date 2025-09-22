@@ -1,0 +1,50 @@
+{
+  "provider": "google_pay",
+  "data": {
+    "environment": "TEST",
+    "apiVersion": 2,
+    "apiVersionMinor": 0,
+    "allowedPaymentMethods": [
+      {
+        "type": "CARD",
+        "parameters": {
+          "allowedAuthMethods": ["PAN_ONLY", "CRYPTOGRAM_3DS"],
+          "allowedCardNetworks": ["VISA", "MASTERCARD"]
+        },
+        "tokenizationSpecification": {
+          "type": "PAYMENT_GATEWAY",
+          "parameters": {
+            "gateway": "example",
+            "gatewayMerchantId": "exampleGatewayMerchantId"
+          }
+        }
+      },
+      {
+        "type": "UPI",
+        "parameters": {
+          "payeeVpa": "test@upi",
+          "payeeName": "Demo Merchant",
+          "transactionNote": "Ticket Payment",
+          "merchantCode": "1234",
+          "transactionId": "TICKET12345"
+        },
+        "tokenizationSpecification": {
+          "type": "PAYMENT_GATEWAY",
+          "parameters": {
+            "gateway": "example",
+            "gatewayMerchantId": "exampleGatewayMerchantId"
+          }
+        }
+      }
+    ],
+    "merchantInfo": {
+      "merchantId": "12345678901234567890",
+      "merchantName": "Demo Merchant"
+    },
+    "transactionInfo": {
+      "totalPriceStatus": "FINAL",
+      "totalPrice": "10.00",
+      "currencyCode": "INR"
+    }
+  }
+}

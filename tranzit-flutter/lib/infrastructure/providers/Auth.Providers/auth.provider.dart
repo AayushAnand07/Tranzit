@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 
 
+import '../../../presentation/pages/AdminScreen.dart';
 import '../../../presentation/pages/NewHomeScreen.dart';
 import '../../../presentation/pages/otp_screen.dart';
 import '../../../presentation/components/custom_snackbar.dart';
@@ -114,7 +115,7 @@ class LoginAuthenticationProvider with ChangeNotifier{
           Navigator.pushReplacement(
             ctx,
             MaterialPageRoute(
-              builder: (context) => OtpScreen(verificationId: _verificationId),
+              builder: (context) => OtpScreen(verificationId: _verificationId,mobileNumber: phoneNumber,),
             ),
           );
         },
@@ -154,35 +155,54 @@ class LoginAuthenticationProvider with ChangeNotifier{
     }
   }
 
-
   Future<void> _handleSuccessfulLogin(
       BuildContext ctx, UserCredential userCredential) async {
+
     final isNewUser = userCredential.additionalUserInfo?.isNewUser ?? false;
 
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('isFirstLogin', isNewUser);
 
-    // reset state
+    // reset OTP state
     _timer?.cancel();
     otpController.clear();
     _isOtpComplete = false;
     _secondsLeft = 14;
     _replace = false;
 
+    // Get the user's ID token and claims
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final idTokenResult = await user.getIdTokenResult(true); // force refresh
+      final claims = idTokenResult.claims;
+      final role = claims?['role'] as String?; // should match your custom claim
+
+      print("User claims: $claims");
+
+      if (role == 'admin') {
+        // Navigate to admin-only page
+        Navigator.pushReplacement(
+          ctx,
+          MaterialPageRoute(builder: (context) => AdminScreen()),
+        );
+        return;
+      }
+    }
+
+    // If new user, navigate to registration
     if (isNewUser) {
       Navigator.pushReplacement(
         ctx,
         MaterialPageRoute(builder: (context) => FirstTimeRegistrationScreen()),
       );
     } else {
+      // Regular user home screen
       Navigator.pushReplacement(
         ctx,
         MaterialPageRoute(builder: (context) => NewHomeScreen()),
       );
     }
   }
-
-
 
 
   void _handleError(BuildContext ctx, dynamic e) {

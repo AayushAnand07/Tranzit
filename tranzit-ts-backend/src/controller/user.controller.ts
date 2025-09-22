@@ -7,6 +7,7 @@ const router= Router();
 const prisma = new PrismaClient();
 const userRepo= new UserRepository();
 
+
 router.post('/create', async (req,res)=> {
     try{
         const {id,name} =  req.body;
@@ -22,7 +23,7 @@ catch(err){
 router.get("/:id", async (req: Request, res: Response) => {
   const user = await userRepo.findByUID(req.params.id)
   if (!user) return res.status(404).json({ error: "User not found" });
-  res.json(user);
+  res.json(user.name);
 });
 
 

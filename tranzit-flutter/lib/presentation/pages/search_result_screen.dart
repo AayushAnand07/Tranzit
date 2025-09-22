@@ -26,6 +26,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
   @override
   Widget build(BuildContext context) {
     final stops = context.watch<RouteProvider>().stops;
+    //final searchProvider= context.watch<RouteProvider>();
 
     return Scaffold(
       backgroundColor: lightGrey,
@@ -33,22 +34,14 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
         backgroundColor: darkTeal,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.close),
+          icon: const Icon(Icons.close,color: Colors.white,),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: const Text(
           'Search Results',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+          style: TextStyle(color:Colors.white,fontWeight: FontWeight.w500, fontSize: 20),
         ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: CircleAvatar(
-              backgroundColor: Colors.white,
-              child: Icon(Icons.tune, color: darkTeal),
-            ),
-          ),
-        ],
+
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,19 +67,8 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                           fontWeight: FontWeight.bold,
                           fontSize: 14)),
                 ),
-                const SizedBox(width: 6),
-                Container(
-                  decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(16)),
-                  padding:
-                  const EdgeInsets.symmetric(vertical: 3, horizontal: 12),
-                  child: Text('Round',
-                      style: TextStyle(
-                          color: Colors.grey[500],
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14)),
-                ),
+
+
               ],
             ),
           ),
@@ -104,14 +86,36 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                   onTap: ()async{
                     final routeProvider = Provider.of<RouteProvider>(context, listen: false);
 
-                    await routeProvider.fetchStopsBetween(
-                      routeId: route['id'],
-                      from: routeStop['fromStop'] ?? '',
-                      to: routeStop['toStop'] ?? '',
-                    ).then((value) => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => BookingDetailPage(route, vehicle)),
-                    ));
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (context) => const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+
+                    try {
+                      await routeProvider.fetchStopsBetween(
+                        routeId: route['id'],
+                        from: routeStop['fromStop'] ?? '',
+                        to: routeStop['toStop'] ?? '',
+                        direction: vehicle['direction'] ??''
+                      );
+
+                      Navigator.of(context).pop();
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              BookingDetailPage(route, vehicle, routeStop),
+                        ),
+                      );
+                    } catch (e) {
+                      Navigator.of(context).pop();
+                      ScaffoldMessenger.of(context)
+                          .showSnackBar(SnackBar(content: Text('Error: $e')));
+                    }
                   },
                   child: Card(
                     margin: const EdgeInsets.symmetric(vertical: 8),
@@ -131,7 +135,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                             margin: const EdgeInsets.only(right: 6),
                             child: Icon(
                               Icons.directions_bus,
-                              color: yellow,
+                              color: Color(0xff004751),
                               size: 40,
                             ),
                           ),
@@ -157,13 +161,13 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                                     ),
                                     const Spacer(),
                                     Text(
-                                      'Ticket Price',
+                                      'Price',
                                       style: TextStyle(
-                                          color: Colors.grey[500], fontSize: 12),
+                                          color: Colors.grey[600], fontSize: 12),
                                     ),
                                     const SizedBox(width: 2),
                                     Text(
-                                      '\$${vehicle['price']?.toStringAsFixed(2) ?? '0.00'}',
+                                      ' ₹${vehicle['price']?.toStringAsFixed(2) ?? '0.00'}',
                                       style: TextStyle(
                                           color: darkTeal,
                                           fontWeight: FontWeight.bold,
@@ -215,22 +219,6 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                                 ),
                                 const SizedBox(height: 7),
                                 // Placeholder rating & reviews
-                                Row(
-                                  children: [
-                                    const Icon(Icons.star,
-                                        color: Colors.amber, size: 18),
-                                    Text(
-                                      ' 3.7 ',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: darkTeal),
-                                    ),
-                                    Text(
-                                      '| 45 reviews',
-                                      style: TextStyle(color: darkTeal),
-                                    ),
-                                  ],
-                                ),
                               ],
                             ),
                           ),

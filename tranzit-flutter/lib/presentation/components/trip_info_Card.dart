@@ -27,7 +27,7 @@ class TripInfoCard extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Row(
           children: [
-            // Logo
+
             Container(
               width: 36,
               height: 36,
@@ -44,7 +44,7 @@ class TripInfoCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Top row: Route code
+
                   Row(
                     children: [
                       Container(
@@ -63,19 +63,8 @@ class TripInfoCard extends StatelessWidget {
                         ),
                       ),
                       const Spacer(),
-                      Text(
-                        "Ticket Price",
-                        style: TextStyle(color: Colors.grey[500], fontSize: 12),
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        '\$${vehicles['price']?.toStringAsFixed(2) ?? '0.00'}',
-                        style: TextStyle(
-                          color: darkTeal,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
-                        ),
-                      ),
+
+
                     ],
                   ),
                   const SizedBox(height: 6),
@@ -109,17 +98,17 @@ class TripInfoCard extends StatelessWidget {
                         style: TextStyle(color: Colors.red, fontWeight: FontWeight.w600, fontSize: 12),
                       ),
                       const Spacer(),
-                      Icon(Icons.star, color: Colors.amber, size: 16),
-                      const SizedBox(width: 2),
+
+                      const SizedBox(width: 4),
                       Text(
-                        "3.7",
-                        style: TextStyle(fontWeight: FontWeight.bold, color: darkTeal, fontSize: 13),
+                        ' ₹${vehicles['price']?.toStringAsFixed(2) ?? '0.00'}',
+                        style: TextStyle(
+                          color: darkTeal,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
                       ),
-                      const SizedBox(width: 5),
-                      Text(
-                        '| 45 reviews',
-                        style: TextStyle(color: darkTeal, fontSize: 13),
-                      )
+
                     ],
                   ),
                 ],

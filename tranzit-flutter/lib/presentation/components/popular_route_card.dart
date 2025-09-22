@@ -43,14 +43,14 @@ class RouteCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          Row(
-            children: transportModes
-                .map((icon) => Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: Icon(icon, size: 20, color: Colors.teal),
-            ))
-                .toList(),
-          ),
+          // Row(
+          //   children: transportModes
+          //       .map((icon) => Padding(
+          //     padding: const EdgeInsets.only(right: 8),
+          //     child: Icon(icon, size: 20, color: Colors.teal),
+          //   ))
+          //       .toList(),
+          // ),
         ],
       ),
     );

@@ -57,6 +57,7 @@ class RouteService{
     required int routeId,
     required String from,
     required String to,
+    required String direction,
   }) async {
     try {
       final response = await _dio.get(
@@ -68,7 +69,13 @@ class RouteService{
         },
       );
 
-      final stops = List<String>.from(response.data);
+      List<String> stops = List<String>.from(response.data);
+
+      if (direction.toLowerCase() == "reverse") {
+
+        stops = stops.reversed.toList();
+      }
+
       return {
         "count": stops.length > 2 ? stops.length - 2 : 0,
         "stops": stops,

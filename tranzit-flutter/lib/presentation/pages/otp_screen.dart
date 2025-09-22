@@ -6,7 +6,8 @@ import 'package:tranzit/presentation/pages/login_screen.dart';
 
 class OtpScreen extends StatefulWidget {
   final String verificationId;
-  const OtpScreen({super.key, required this.verificationId});
+  final String mobileNumber;
+  const OtpScreen({super.key, required this.verificationId,required this.mobileNumber});
 
   @override
   State<OtpScreen> createState() => _OtpScreenState();
@@ -52,8 +53,8 @@ class _OtpScreenState extends State<OtpScreen> {
                 const SizedBox(height: 8),
 
 
-                const Text(
-                  'Sent via SMS to 9012345678',
+                 Text(
+                  'Sent via SMS to ${widget.mobileNumber}',
                   style: TextStyle(fontSize: 16, color: Colors.grey),
                 ),
                 const SizedBox(height: 32),

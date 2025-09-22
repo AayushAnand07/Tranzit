@@ -12,6 +12,9 @@ class CreateProfileProvider with ChangeNotifier {
   String _error = '';
   String get error => _error;
 
+  String _userName = '';
+  String get userName=> _userName;
+
   Future<void> postProfile(String id, String name) async {
     try {
       _isLoading = true;
@@ -33,6 +36,31 @@ class CreateProfileProvider with ChangeNotifier {
     }
 
   }
+
+
+Future<void> getUserName(String id) async {
+    try {
+      _isLoading = true;
+      notifyListeners();
+
+      _userName = await _userService.getUserByUid(id);
+
+      _isLoading = false;
+      notifyListeners();
+      print('User fetched: $_userName');
+    } catch (e) {
+
+      _isLoading = false;
+      _error = e.toString();
+
+      notifyListeners();
+      print('Error: $_error');
+
+    }
+
+  }
+
+
 
 
 

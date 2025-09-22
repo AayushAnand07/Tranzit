@@ -43,7 +43,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => OtpScreen(verificationId: _verificationId),
+            builder: (context) => OtpScreen(verificationId: _verificationId,mobileNumber: phoneNumber,),
           ),
         );
       },
