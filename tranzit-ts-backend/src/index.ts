@@ -4,6 +4,7 @@ import { withAccelerate } from '@prisma/extension-accelerate'
 import userRouter from './controller/user.controller'
 import routesRouter from './controller/routes.controller'
 import ticketRouter from './controller/ticket.controller'
+import chatRouter from './controller/chat.controller'
 
 
 const app = express();
@@ -19,6 +20,7 @@ app.use(express.json());
 app.use('/api/v1/users/',userRouter);
 app.use('/api/v1/routes/',routesRouter);
 app.use('/api/v1/ticket/',ticketRouter);
+app.use('/api/v1/chat/',chatRouter);
 
 
 app.get("/users", async (req, res) => {
@@ -26,7 +28,7 @@ app.get("/users", async (req, res) => {
   res.json(users);
 });
 app.get("/", (req: Request, res: Response) => {
-  res.send("Hello from TypeScript Node.js Server ");
+   res.send('Hello from Tranzit Backend')
 });
 
 

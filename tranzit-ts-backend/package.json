@@ -16,6 +16,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@google-cloud/vertexai": "^1.10.0",
     "@prisma/client": "^6.16.1",
     "express": "^5.1.0",
     "qrcode": "^1.5.4"
