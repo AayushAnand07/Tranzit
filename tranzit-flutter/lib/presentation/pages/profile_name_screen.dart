@@ -22,7 +22,7 @@ class _FirstTimeRegistrationScreenState extends State<FirstTimeRegistrationScree
 void _submit(BuildContext context) async {
   if (_formKey.currentState?.validate() ?? false) {
     final name = _nameController.text;
-    print(uid);
+
     final provider = Provider.of<CreateProfileProvider>(context, listen: false);
     await provider.postProfile(uid, name);
     final prefs = await SharedPreferences.getInstance();
