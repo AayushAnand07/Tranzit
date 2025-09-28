@@ -1,130 +1,47 @@
 import { Router, Request, Response } from "express";
-import { Prisma, PrismaClient } from "../generated/prisma";
-import { withAccelerate } from '@prisma/extension-accelerate'
-import QRCode from "qrcode";
+import * as ticketService from "../services/ticket.services";
 
 const router = Router();
-const prisma = new PrismaClient().$extends(withAccelerate())
 
-router.post('/book', async (req: Request, res: Response) => {
-   
-    try {
-        const { vehicleId, fromStopId, toStopId , userId} = req.body;
-        const vehicle = await prisma.vehicle.findUnique({ where: {id: vehicleId } });
-        if (!vehicle) {
-            return res.status(404).json({ error: "Vehicle not found" });
-        }
-          let qrPayload = `${userId}-${vehicleId}-${Date.now()}`;
-        const qrCode = await QRCode.toDataURL(qrPayload);
-
-        const ticket = await prisma.ticket.create({
-            data: {
-                userId,
-                vehicleId,
-                fromStopId,
-                toStopId,
-                qrCode
-            },
-            include: { vehicle: true, fromStop: true, toStop: true },
-        });
-        qrPayload = `${userId}-${vehicleId}-${ticket.id}-${Date.now()}`;
-         res.status(200).json({
-      success: true,
-      message: "Ticket booked successfully",
-      qrPayload, 
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ success: false, error: "Booking failed" });
+router.post("/book", async (req: Request, res: Response) => {
+  try {
+    const { ticket, qrPayload } = await ticketService.bookTicket(req.body);
+    res.status(200).json({ success: true, message: "Ticket booked successfully", qrPayload, ticket });
+  } catch (err: any) {
+    console.error(err);
+    res.status(500).json({ success: false, error: err.message || "Booking failed" });
   }
 });
-router.get("/", async (req, res) => {
+
+router.get("/", async (req: Request, res: Response) => {
   try {
     const userId = req.uid;
-
-   const tickets = await 
-   prisma.ticket.findMany({
-   
-     where: { userId },
-      include: {
-        vehicle: true,
-        fromStop: true,
-        toStop: true,
-      },
-      orderBy: {
-        createdAt: "desc",  
-      },
-    });
-
-   console.log(tickets);
-
+    const tickets = await ticketService.getUserTickets(userId!);
     res.json({ tickets });
-  } catch (err) {
+  } catch (err: any) {
     console.error(err);
-    res.status(500).json({ error: "Could not fetch tickets" });
+    res.status(500).json({ error: err.message || "Could not fetch tickets" });
   }
 });
 
-
-router.post("/checkin", async (req, res) => {
+router.post("/checkin", async (req: Request, res: Response) => {
   try {
-    const { ticketId } = req.body;
-
-    const ticket = await prisma.ticket.findUnique({
-      where: { id: ticketId }
-    });
-
-    if (!ticket) {
-      return res.status(404).json({ success: false, error: "Ticket not found" });
-    }
-
-    if (ticket.status === "CHECKED_OUT" || ticket.status === "CHECKED_IN" ) {
-      return res.json({ success: false, error: "Ticket already checked in" });
-    }
-
-    await prisma.ticket.update({
-      where: { id: ticketId },
-      data: { status: "CHECKED_IN" },
-      include: { vehicle: true, fromStop: true, toStop: true },
-    });
-
-    res.json({ success: true });
-  } catch (err) {
+    const ticket = await ticketService.checkInTicket(req.body.ticketId);
+    res.json({ success: true, ticket });
+  } catch (err: any) {
     console.error(err);
-    res.status(500).json({ success: false, error: "Check-in failed" });
+    res.status(400).json({ success: false, error: err.message });
   }
 });
 
-router.post("/checkout", async (req, res) => {
+router.post("/checkout", async (req: Request, res: Response) => {
   try {
-    const { ticketId } = req.body;
-
-    const ticket = await prisma.ticket.findUnique({
-      where: { id: ticketId }
-    });
-
-    if (!ticket) {
-      return res.status(404).json({ success: false, error: "Ticket not found" });
-    }
-
-    if (ticket.status === "CHECKED_OUT") {
-      return res.json({ success: false, error: "Ticket already checked in" });
-    }
-
-    await prisma.ticket.update({
-      where: { id: ticketId },
-      data: { status: "CHECKED_OUT" },
-      include: { vehicle: true, fromStop: true, toStop: true },
-    });
-
-    res.json({ success: true });
-  } catch (err) {
+    const ticket = await ticketService.checkOutTicket(req.body.ticketId);
+    res.json({ success: true, ticket });
+  } catch (err: any) {
     console.error(err);
-    res.status(500).json({ success: false, error: "Check-in failed" });
+    res.status(400).json({ success: false, error: err.message });
   }
 });
-
-
-
 
 export default router;

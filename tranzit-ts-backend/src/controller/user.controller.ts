@@ -1,10 +1,8 @@
 import { Router,Request , Response } from "express";
-
-import { Prisma, PrismaClient } from "../generated/prisma";
 import { UserRepository } from "../repository/user.repository";
 
 const router= Router();
-const prisma = new PrismaClient();
+
 const userRepo= new UserRepository();
 
 
@@ -12,6 +10,7 @@ router.post('/create', async (req,res)=> {
     try{
         const {id,name} =  req.body;
     const user= userRepo.createUser(id,name);
+    console.log(user)
     res.status(201).json(user)
 }
 catch(err){  

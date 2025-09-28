@@ -1,214 +1,165 @@
-// src/prisma/seed.ts
 import { PrismaClient } from "../generated/prisma";
 
 const prisma = new PrismaClient();
 
+
+function addMinutesToDate(date: Date, minsToAdd: number): Date {
+  const newDate = new Date(date);
+  newDate.setUTCMinutes(newDate.getUTCMinutes() + minsToAdd);
+  return newDate;
+}
+
+
+function generateUTCTimes(startHour: number, endHour: number, intervalMins: number): Date[] {
+  const times = [];
+  
+  for (let h = startHour; h <= endHour; h++) {
+    for (let m = 0; m < 60; m += intervalMins) {
+      if (h === endHour && m > 0) break;
+      
+    
+      const utcTime = new Date();
+      utcTime.setUTCFullYear(2024, 0, 1); 
+      utcTime.setUTCHours(h, m, 0, 0);
+      
+      times.push(utcTime);
+    }
+  }
+  return times;
+}
+
 async function main() {
-
-// await prisma.$executeRaw`TRUNCATE TABLE "Vehicle" CASCADE`;
-// await prisma.$executeRaw`TRUNCATE TABLE "RouteStop" CASCADE`;
-// await prisma.$executeRaw`TRUNCATE TABLE "Route" CASCADE`;
-// await prisma.$executeRaw`TRUNCATE TABLE "Stop" CASCADE`;
-
-// await prisma.$executeRaw`ALTER SEQUENCE "Route_id_seq" RESTART WITH 1`;
-// await prisma.$executeRaw`ALTER SEQUENCE "Stop_id_seq" RESTART WITH 1`;
-// await prisma.$executeRaw`ALTER SEQUENCE "Vehicle_id_seq" RESTART WITH 1`;
-// await prisma.$executeRaw`ALTER SEQUENCE "RouteStop_id_seq" RESTART WITH 1`;
-
-
-  // PMPML Bus route Swargate → Hinjewadi
-
+  console.log("Starting seed process with UTC times...");
+  
+ 
+  console.log("Creating PMPML bus route...");
   const busRoute = await prisma.route.create({
-    data: { name: "Swargate-Hinjewadi", transport: "MTC" }, // buses = MTC enum
+    data: { name: "Swargate-Hinjewadi", transport: "PMPML" },
   });
 
   const busStops = [
-    "swargate",
-    "deccan",
-    "shivajinagar",
-    "puneuniversity",
-    "aupune",
-    "baner",
-    "balewadi",
-    "wakad",
-    "hinjewadi",
+    "Swargate", "Deccan", "Shivajinagar", "Pune University", "Aundh",
+    "Baner", "Balewadi", "Wakad", "Hinjewadi",
   ];
 
+  console.log("Creating bus stops...");
   for (let i = 0; i < busStops.length; i++) {
     let stop = await prisma.stop.findUnique({ where: { name: busStops[i] } });
     if (!stop) {
       stop = await prisma.stop.create({ data: { name: busStops[i] } });
     }
-
     await prisma.routeStop.create({
       data: { routeId: busRoute.id, stopId: stop.id, order: i + 1 },
     });
   }
 
-  // Multiple buses FORWARD (Swargate → Hinjewadi)
-  await prisma.vehicle.createMany({
-    data: [
-      {
-        vehicleId: "pmpml01",
+
+  const busTimesForward = generateUTCTimes(1, 17, 30);
+  const busTimesReverse = generateUTCTimes(1, 17, 30);
+
+  console.log(`Creating ${busTimesForward.length} forward bus vehicles...`);
+  for (let i = 0; i < busTimesForward.length; i++) {
+    const departureUTC = busTimesForward[i];
+    const arrivalUTC = addMinutesToDate(departureUTC, 90);
+    
+    await prisma.vehicle.create({
+      data: {
+        vehicleId: `PMPML-FWD-${String(i + 1).padStart(3, "0")}`,
         routeId: busRoute.id,
-        departure: new Date("2025-09-15T05:30:00Z"),
-        arrival: new Date("2025-09-15T07:00:00Z"),
+        departure: departureUTC,
+        arrival: arrivalUTC,
         price: 25,
         direction: "FORWARD",
       },
-      {
-        vehicleId: "pmpml03",
-        routeId: busRoute.id,
-        departure: new Date("2025-09-15T06:30:00Z"),
-        arrival: new Date("2025-09-15T08:00:00Z"),
-        price: 25,
-        direction: "FORWARD",
-      },
-      {
-        vehicleId: "pmpml05",
-        routeId: busRoute.id,
-        departure: new Date("2025-09-15T07:30:00Z"),
-        arrival: new Date("2025-09-15T09:00:00Z"),
-        price: 25,
-        direction: "FORWARD",
-      },
-    ],
-  });
+    });
+  }
 
-  // Multiple buses REVERSE (Hinjewadi → Swargate)
-  await prisma.vehicle.createMany({
-    data: [
-      {
-        vehicleId: "pmpml02",
+  console.log(`Creating ${busTimesReverse.length} reverse bus vehicles...`);
+  for (let i = 0; i < busTimesReverse.length; i++) {
+    const departureUTC = busTimesReverse[i];
+    const arrivalUTC = addMinutesToDate(departureUTC, 90); // 90 minutes journey
+    
+    await prisma.vehicle.create({
+      data: {
+        vehicleId: `PMPML-REV-${String(i + 1).padStart(3, "0")}`,
         routeId: busRoute.id,
-        departure: new Date("2025-09-15T07:00:00Z"),
-        arrival: new Date("2025-09-15T08:30:00Z"),
+        departure: departureUTC,
+        arrival: arrivalUTC,
         price: 25,
         direction: "REVERSE",
       },
-      {
-        vehicleId: "pmpml04",
-        routeId: busRoute.id,
-        departure: new Date("2025-09-15T08:00:00Z"),
-        arrival: new Date("2025-09-15T09:30:00Z"),
-        price: 25,
-        direction: "REVERSE",
-      },
-      {
-        vehicleId: "pmpml06",
-        routeId: busRoute.id,
-        departure: new Date("2025-09-15T09:00:00Z"),
-        arrival: new Date("2025-09-15T10:30:00Z"),
-        price: 25,
-        direction: "REVERSE",
-      },
-    ],
-  });
+    });
+  }
 
-  
-  //  Pune Metro Aqua Line Route: PCMC → Swargate
 
+  console.log("Creating Metro route...");
   const metroRoute = await prisma.route.create({
     data: { name: "Pune Metro Aqua Line", transport: "METRO" },
   });
 
   const metroStops = [
-    "pcmc",
-    "santtukaramnagar",
-    "bhosari",
-    "kasarwadi",
-    "phugewadi",
-    "dapodi",
-    "bopodi",
-    "rangehill",
-    "shivajinagar",
-    "civilcourt",
-    "mandai",
-    "swargate",
+    "PCMC", "Sant Tukaram Nagar", "Bhosari", "Kasarwadi", "Phugewadi", "Dapodi",
+    "Bopodi", "Range Hill", "Shivajinagar", "Civil Court", "Mandai", "Swargate"
   ];
 
+  console.log("Creating metro stops...");
   for (let i = 0; i < metroStops.length; i++) {
     let stop = await prisma.stop.findUnique({ where: { name: metroStops[i] } });
     if (!stop) {
       stop = await prisma.stop.create({ data: { name: metroStops[i] } });
     }
-
     await prisma.routeStop.create({
       data: { routeId: metroRoute.id, stopId: stop.id, order: i + 1 },
     });
   }
 
-  // Multiple Metro trains FORWARD (PCMC → Swargate)
-  await prisma.vehicle.createMany({
-    data: [
-      {
-        vehicleId: "metro_pune01",
-        routeId: metroRoute.id,
-        departure: new Date("2025-09-15T06:00:00Z"),
-        arrival: new Date("2025-09-15T06:40:00Z"),
-        price: 40,
-        direction: "FORWARD",
-      },
-      {
-        vehicleId: "metro_pune03",
-        routeId: metroRoute.id,
-        departure: new Date("2025-09-15T06:30:00Z"),
-        arrival: new Date("2025-09-15T07:10:00Z"),
-        price: 40,
-        direction: "FORWARD",
-      },
-      {
-        vehicleId: "metro_pune05",
-        routeId: metroRoute.id,
-        departure: new Date("2025-09-15T07:00:00Z"),
-        arrival: new Date("2025-09-15T07:40:00Z"),
-        price: 40,
-        direction: "FORWARD",
-      },
-    ],
-  });
+  const metroTimesForward = generateUTCTimes(1, 17, 30);
+  const metroTimesReverse = generateUTCTimes(1, 17, 30);
 
-  //  Metro trains REVERSE (Swargate → PCMC)
-  await prisma.vehicle.createMany({
-    data: [
-      {
-        vehicleId: "metro_pune02",
+  console.log(`Creating ${metroTimesForward.length} forward metro vehicles...`);
+  for (let i = 0; i < metroTimesForward.length; i++) {
+    const departureUTC = metroTimesForward[i];
+    const arrivalUTC = addMinutesToDate(departureUTC, 40); // 40 minutes journey
+    
+    await prisma.vehicle.create({
+      data: {
+        vehicleId: `METRO-AQ-FWD-${String(i + 1).padStart(3, "0")}`,
         routeId: metroRoute.id,
-        departure: new Date("2025-09-15T07:30:00Z"),
-        arrival: new Date("2025-09-15T08:10:00Z"),
+        departure: departureUTC,
+        arrival: arrivalUTC,
         price: 40,
-        direction: "REVERSE",
+        direction: "FORWARD",
       },
-      {
-        vehicleId: "metro_pune04",
-        routeId: metroRoute.id,
-        departure: new Date("2025-09-15T08:00:00Z"),
-        arrival: new Date("2025-09-15T08:40:00Z"),
-        price: 40,
-        direction: "REVERSE",
-      },
-      {
-        vehicleId: "metro_pune06",
-        routeId: metroRoute.id,
-        departure: new Date("2025-09-15T08:30:00Z"),
-        arrival: new Date("2025-09-15T09:10:00Z"),
-        price: 40,
-        direction: "REVERSE",
-      },
-    ],
-  });
+    });
+  }
 
-  console.log(
-    "Seed completed: PMPML Swargate-Hinjewadi buses + Pune Metro Aqua Line trains with multiple FORWARD/REVERSE timings."
-  );
+  console.log(`Creating ${metroTimesReverse.length} reverse metro vehicles...`);
+  for (let i = 0; i < metroTimesReverse.length; i++) {
+    const departureUTC = metroTimesReverse[i];
+    const arrivalUTC = addMinutesToDate(departureUTC, 40); // 40 minutes journey
+    
+    await prisma.vehicle.create({
+      data: {
+        vehicleId: `METRO-AQ-REV-${String(i + 1).padStart(3, "0")}`,
+        routeId: metroRoute.id,
+        departure: departureUTC,
+        arrival: arrivalUTC,
+        price: 40,
+        direction: "REVERSE",
+      },
+    });
+  }
+
+
 }
 
 main()
   .then(async () => {
+    console.log("Seed process completed successfully.");
     await prisma.$disconnect();
   })
   .catch(async (e) => {
-    console.error(e);
+    console.error("Error during seed process:", e);
     await prisma.$disconnect();
     process.exit(1);
   });

@@ -4,3 +4,5 @@ node_modules
 
 /src/generated/prisma
 firebase-service-account.json
+google-cloud-sdk
+tranzit-5ce96-e8971400515e

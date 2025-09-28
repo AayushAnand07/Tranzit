@@ -5,21 +5,35 @@ import { TransportType } from "../generated/prisma";
 const router = Router();
 
 
-const formatInputString = (str: string) => {
-    let lowercasedString = str.toLowerCase();
-    let cleanedString = lowercasedString.replace(/[^a-z0-9]/g, '');
-    return cleanedString;
-}
+
 
 router.get("/", async (req: Request, res: Response) => {
-  const { from, to, transportType } = req.query;
+  const { from, to, transportType, journeyDate, passengers} = req.query;
 
-  const formattedFrom = formatInputString(from as string);
-  const formattedTo = formatInputString(to as string);
 
+  const formattedFrom = from as string;
+  const formattedTo = to as string;
+
+  const typepassengers = passengers as string
+  console.log(formattedFrom)
+  console.log(formattedTo)
   if (!formattedFrom || !formattedTo) {
     return res.status(400).json({ error: "from and to query parameters are required" });
   }
+
+   let parsedJourneyDate: Date | undefined;
+  if (typeof journeyDate === "string") {
+    const date = new Date(journeyDate);
+    console.log("thsi si new date",date);
+    if (!isNaN(date.getTime())) {
+      parsedJourneyDate = date;
+    } else {
+      return res.status(400).json({ error: "Invalid journeyDate format" });
+    }
+  }
+
+  
+  
 
   let transportTypeEnum: TransportType | undefined;
   if (typeof transportType === "string") {
@@ -34,8 +48,10 @@ router.get("/", async (req: Request, res: Response) => {
     return res.status(400).json({ error: "Invalid transportType format" });
   }
 
+  console.log(journeyDate);
   try {
-    const results = await routeService.searchRoutes(formattedFrom, formattedTo, transportTypeEnum);
+    const results = await routeService.searchRoutes(formattedFrom, formattedTo, transportTypeEnum,parsedJourneyDate,typepassengers);
+    // console.log(results);
     return res.json({ results });
   } catch (err: any) {
     if (err.message === "STOP_NOT_FOUND") {

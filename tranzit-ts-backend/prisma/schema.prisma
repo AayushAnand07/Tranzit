@@ -14,13 +14,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
   id        String   @id @default(uuid())
   name      String
   role      Role     @default(USER)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @db.Timestamptz
+  updatedAt DateTime @updatedAt @db.Timestamptz
   tickets   Ticket[]
 }
 
@@ -29,16 +28,27 @@ enum Role {
   ADMIN
 }
 
+
 model Stop {
-  id        Int         @id @default(autoincrement())
-  name      String      @unique
-  routeStops RouteStop[]
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  routeStops  RouteStop[]
   fromTickets Ticket[] @relation("FromStop")
   toTickets   Ticket[] @relation("ToStop")
+   stopEmbedding StopEmbedding?
+}
+
+model StopEmbedding {
+  id       Int      @id @default(autoincrement())
+  stopId   Int      @unique
+  vector   Float[]  
+  stop     Stop     @relation(fields: [stopId], references: [id])
+
+  @@index([stopId])
 }
 
 model Route {
-  id         Int         @id @default(autoincrement())
+  id         Int           @id @default(autoincrement())
   name       String
   transport  TransportType
   routeStops RouteStop[]
@@ -52,6 +62,8 @@ model RouteStop {
   order   Int
   route   Route @relation(fields: [routeId], references: [id])
   stop    Stop  @relation(fields: [stopId], references: [id])
+
+  @@unique([routeId, stopId])
 }
 
 enum RouteDirection {
@@ -60,36 +72,37 @@ enum RouteDirection {
 }
 
 model Vehicle {
-  id        Int      @id @default(autoincrement())
-  vehicleId String   @unique
+  id        Int            @id @default(autoincrement())
+  vehicleId String         @unique
   routeId   Int
-  departure DateTime
-  arrival   DateTime
+  departure DateTime       @db.Timestamptz
+  arrival   DateTime       @db.Timestamptz
   price     Float
   direction RouteDirection @default(FORWARD)
-  route     Route    @relation(fields: [routeId], references: [id])
+  route     Route          @relation(fields: [routeId], references: [id])
   tickets   Ticket[]
 }
 
 model Ticket {
-  id         Int          @id @default(autoincrement())
-  userId     String
-  vehicleId  Int
-  fromStopId Int
-  toStopId   Int
-  status     TicketStatus @default(BOOKED)
-  qrCode     String
-  createdAt  DateTime     @default(now())
-
-  user     User    @relation(fields: [userId], references: [id])
-  vehicle  Vehicle @relation(fields: [vehicleId], references: [id])
-  fromStop Stop    @relation("FromStop", fields: [fromStopId], references: [id])
-  toStop   Stop    @relation("ToStop", fields: [toStopId], references: [id])
+  id          Int          @id @default(autoincrement())
+  userId      String
+  vehicleId   Int
+  fromStopId  Int
+  toStopId    Int
+  passengers  Int
+  price       Int
+  journeyDate DateTime     @db.Timestamptz
+  status      TicketStatus @default(BOOKED)
+  createdAt   DateTime     @default(now()) @db.Timestamptz
+  user        User         @relation(fields: [userId], references: [id])
+  vehicle     Vehicle      @relation(fields: [vehicleId], references: [id])
+  fromStop    Stop         @relation("FromStop", fields: [fromStopId], references: [id])
+  toStop      Stop         @relation("ToStop", fields: [toStopId], references: [id])
 }
 
 enum TransportType {
   METRO
-  MTC
+  PMPML
 }
 
 enum TicketStatus {
