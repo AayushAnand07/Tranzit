@@ -55,6 +55,9 @@ dependencies:
   pay: ^1.1.2
   qr: ^3.0.1
   qr_code_scanner: ^1.0.1
+  permission_handler: ^11.0.1
+  firebase_messaging: ^14.7.10
+  flutter_local_notifications: ^18.0.1
   #sms_autofill: ^2.4.1
 
 

@@ -70,22 +70,12 @@ class LoginAuthenticationProvider with ChangeNotifier{
   }
 
 
-
-
-
-
-
   @override
   void dispose() {
     otpController.dispose();
     _timer?.cancel();
     super.dispose();
   }
-
-
-
-
-
 
   Future<void> sendOtp(String phoneNumber, BuildContext ctx) async {
     _isLoading = true;
@@ -95,7 +85,7 @@ class LoginAuthenticationProvider with ChangeNotifier{
       await FirebaseAuth.instance.verifyPhoneNumber(
         phoneNumber: "+91$phoneNumber",
         verificationCompleted: (PhoneAuthCredential credential) async {
-          // Auto verification: directly sign in
+
           final UserCredential userCredential =
           await FirebaseAuth.instance.signInWithCredential(credential);
 

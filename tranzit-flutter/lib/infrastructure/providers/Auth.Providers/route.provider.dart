@@ -55,6 +55,8 @@ class RouteProvider with ChangeNotifier {
     required String from,
     required String to,
     String? transportType,
+    required String journeyDate,
+    required String passengers
   }) async {
     _isLoading = true;
     notifyListeners();
@@ -64,6 +66,8 @@ class RouteProvider with ChangeNotifier {
         from: from,
         to: to,
         transportType: transportType,
+        journeyDate: journeyDate,
+        passengers:passengers
       );
       _stops = List<Map<String, dynamic>>.from(data);
     } catch (e) {
@@ -80,7 +84,7 @@ class RouteProvider with ChangeNotifier {
     required int routeId,
     required String from,
     required String to,
-    required String direction
+    required String direction,
   }) async {
     _isLoading = true;
     notifyListeners();

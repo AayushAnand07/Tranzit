@@ -23,6 +23,9 @@ final RouteProvider routeProvider = RouteProvider();
     required int fromStopName,
     required int toStopName,
     required String userId,
+    required String journeyDate,
+    required int passengers,
+    required int price
   }) async {
     _isLoading = true;
     notifyListeners();
@@ -33,6 +36,9 @@ final RouteProvider routeProvider = RouteProvider();
         fromStopId:fromStopName,
         toStopId: toStopName,
         userId: userId,
+        journeyDate: journeyDate,
+        passengers: passengers,
+        price:price
       );
 
       if (response['success'] == true) {
@@ -84,7 +90,7 @@ final RouteProvider routeProvider = RouteProvider();
 
       final response = await _bookingService.FetchAllTickets();
       _bookingHistory=List<Map<String,dynamic>>.from(response);
-
+print("All tickets fetched"+_bookingHistory.toString());
     } catch (e) {
       print("Error fetching booking history for user: $e");
       _bookingHistory = [];

@@ -6,6 +6,8 @@ import 'package:provider/provider.dart';
 import 'package:tranzit/application/coreProvider/core_provider.dart';
 import 'package:tranzit/presentation/pages/NewHomeScreen.dart';
 import 'firebase_options.dart';
+import 'infrastructure/services/notification.service.dart';
+import 'presentation/pages/AdminScreen.dart';
 import 'presentation/pages/login_screen.dart';
 
 Future<void> main() async {
@@ -13,36 +15,83 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await NotificationService.initialize();
   runApp(const MyApp());
 }
 
+
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
+  ThemeData get appTheme => ThemeData(
+    colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFF0E4546)),
+    useMaterial3: true,
+    switchTheme: SwitchThemeData(
+      thumbColor: MaterialStateProperty.resolveWith<Color>((states) {
+        if (states.contains(MaterialState.selected)) {
+          return Color(0xFF0E4546);
+        }
+        return Colors.grey;
+      }),
+      trackColor: MaterialStateProperty.resolveWith<Color>((states) {
+        if (states.contains(MaterialState.selected)) {
+          return Color(0xFF0E4546).withOpacity(0.54);
+        }
+        return Colors.grey.withOpacity(0.38);
+      }),
+    ),
+  );
 
   @override
+  @override
   Widget build(BuildContext context) {
-    User? user = FirebaseAuth.instance.currentUser;
+    final user = FirebaseAuth.instance.currentUser;
+
     return MultiProvider(
       providers: providers,
-        child:ScreenUtilInit(
-            designSize: const Size(360, 690),
-            minTextAdapt: true,
-            splitScreenMode: true,
-          builder: (context,child) {
+      child: ScreenUtilInit(
+        designSize: const Size(360, 690),
+        minTextAdapt: true,
+        splitScreenMode: true,
+        builder: (context, child) {
+          if (user == null) {
             return MaterialApp(
               debugShowCheckedModeBanner: false,
-              title: 'Tranzit',
-              theme: ThemeData(
+              theme: appTheme, // Add theme here
+              home: LoginSignupScreen(),
+            );
+          } else {
+            return FutureBuilder<IdTokenResult>(
+              future: user.getIdTokenResult(true),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return MaterialApp(
+                    theme: appTheme,
+                    debugShowCheckedModeBanner: false,
+                    home: Scaffold(
+                      backgroundColor: Colors.white,
+                      body: const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
+                  );
+                }
+                if (snapshot.hasError) {
+                  return const Center(child: Text('Failed to get user role.'));
+                }
+                final role = snapshot.data!.claims!['role'] ?? 'USER';
 
-               colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFF0E4546)),
-                useMaterial3: true,
-              ),
-              home:(user!=null)? NewHomeScreen():LoginSignupScreen()
+                return MaterialApp(
+                  debugShowCheckedModeBanner: false,
+                  title: 'Tranzit',
+                  theme: appTheme,
+                  home: role == 'admin' ? const AdminScreen() : NewHomeScreen(),
+                );
+              },
             );
           }
-        ),
-
+        },
+      ),
     );
   }
 }

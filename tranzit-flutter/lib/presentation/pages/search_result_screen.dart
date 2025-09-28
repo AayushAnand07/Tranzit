@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import '../../infrastructure/helper/date_format_helper.dart';
 import '../../infrastructure/providers/Auth.Providers/route.provider.dart';
+import '../components/SearchResultCard.dart';
 import 'booking_detail_screen.dart';
+import '../theme/colors.dart';
 
 class SearchResultsScreen extends StatefulWidget {
 
-  SearchResultsScreen({Key? key}) : super(key: key);
+  final int passengerCount;
+  SearchResultsScreen(this.passengerCount);
 
   @override
   State<SearchResultsScreen> createState() => _SearchResultsScreenState();
@@ -17,11 +21,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
   final yellow = const Color(0xFFEFE973);
   final lightGrey = const Color(0xFFF5F5F5);
 
-  String formatTime(String dateStr) {
-    final dt = DateTime.tryParse(dateStr);
-      if (dt == null) return dateStr;
-    return DateFormat.jm().format(dt);
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +31,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
     return Scaffold(
       backgroundColor: lightGrey,
       appBar: AppBar(
-        backgroundColor: darkTeal,
+        backgroundColor:ColourHelper.mainThemeColour,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.close,color: Colors.white,),
@@ -108,7 +108,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                         context,
                         MaterialPageRoute(
                           builder: (context) =>
-                              BookingDetailPage(route, vehicle, routeStop),
+                              BookingDetailPage(route, vehicle, routeStop,widget.passengerCount),
                         ),
                       );
                     } catch (e) {
@@ -117,115 +117,7 @@ class _SearchResultsScreenState extends State<SearchResultsScreen> {
                           .showSnackBar(SnackBar(content: Text('Error: $e')));
                     }
                   },
-                  child: Card(
-                    margin: const EdgeInsets.symmetric(vertical: 8),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
-                    color: Colors.white,
-                    elevation: 1,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 16),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 40,
-                            height: 40,
-                            alignment: Alignment.center,
-                            margin: const EdgeInsets.only(right: 6),
-                            child: Icon(
-                              Icons.directions_bus,
-                              color: Color(0xff004751),
-                              size: 40,
-                            ),
-                          ),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 3),
-                                      decoration: BoxDecoration(
-                                        color: yellow,
-                                        borderRadius: BorderRadius.circular(5),
-                                      ),
-                                      child: Text(
-                                        route['name'] ?? '',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w700,
-                                            color: darkTeal),
-                                      ),
-                                    ),
-                                    const Spacer(),
-                                    Text(
-                                      'Price',
-                                      style: TextStyle(
-                                          color: Colors.grey[600], fontSize: 12),
-                                    ),
-                                    const SizedBox(width: 2),
-                                    Text(
-                                      ' ₹${vehicle['price']?.toStringAsFixed(2) ?? '0.00'}',
-                                      style: TextStyle(
-                                          color: darkTeal,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 6),
-                                // Departure & arrival
-                                Row(
-                                  children: [
-                                    Text(
-                                      'Arriving by ',
-                                      style: TextStyle(
-                                          fontSize: 13, color: Colors.grey[700]),
-                                    ),
-                                    Text(
-                                      formatTime(vehicle['arrival'] ?? ''),
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          color: darkTeal),
-                                    ),
-                                    Text(
-                                      '  →  ',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.grey[600]),
-                                    ),
-                                    Text(
-                                      formatTime(vehicle['departure'] ?? ''),
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          color: darkTeal),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 3),
-                                // Direction
-                                Row(
-                                  children: [
-                                    Text(
-                                      'Direction: ${vehicle['direction'] ?? ''}',
-                                      style: TextStyle(
-                                          color: Colors.red[700],
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 13),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 7),
-                                // Placeholder rating & reviews
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                  child: SearchResultCard(route: route,routeStop: routeStop,vehicle: vehicle,passengerCount: widget.passengerCount),
                 );
               },
             ),

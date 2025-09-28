@@ -6,7 +6,7 @@ class BaseService {
 
   BaseService()
       : dio = Dio(BaseOptions(
-    baseUrl: 'https://666693079fdb.ngrok-free.app/api/v1/',
+    baseUrl: 'https://tranzitbackend-1032077500528.asia-south1.run.app/api/v1/',
     headers: {'Content-Type': 'application/json'},
   )) {
     dio.interceptors.add(

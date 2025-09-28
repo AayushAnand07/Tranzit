@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:tranzit/presentation/theme/colors.dart';
+
+import '../../infrastructure/helper/date_format_helper.dart';
 
 class TripInfoCard extends StatelessWidget {
   final route;
@@ -16,7 +19,7 @@ class TripInfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const darkTeal = Color(0xFF165E5A);
+     Color darkTeal =ColourHelper.mainThemeColour;
     const yellow = Color(0xFFEFE973);
 
     return Card(
@@ -35,7 +38,7 @@ class TripInfoCard extends StatelessWidget {
               alignment: Alignment.center,
               child: Icon(
                 Icons.directions_bus,
-                color: yellow,
+                color: ColourHelper.mainThemeColour,
                 size: 30,
               ),
             ),
@@ -73,11 +76,11 @@ class TripInfoCard extends StatelessWidget {
                     children: [
                       Text(
                         "Departure by",
-                        style: TextStyle(color: Colors.grey[400],fontSize: 13),
+                        style: TextStyle(color: Colors.grey[800],fontSize: 13),
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        formatTime(vehicles['departure'] ?? ''),
+                        DateTimeFormatHelper.formatTime(vehicles['departure'] ?? ''),
                         style: TextStyle(color: Colors.grey[700], fontSize: 14),
                       ),
                       const Padding(
@@ -85,7 +88,7 @@ class TripInfoCard extends StatelessWidget {
                         child: Icon(Icons.arrow_right_alt, size: 18, color: Colors.grey),
                       ),
                       Text(
-                        formatTime(vehicles['arrival'] ?? ''),
+                        DateTimeFormatHelper.formatTime(vehicles['arrival'] ?? ''),
                         style: TextStyle(color: Colors.grey[700], fontSize: 14),
                       ),
                     ],

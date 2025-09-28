@@ -4,6 +4,7 @@ import 'package:pay/pay.dart';
 import 'package:provider/provider.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 import 'package:tranzit/presentation/pages/ticket_detail_screen.dart';
+import 'package:tranzit/presentation/theme/colors.dart';
 
 import '../../infrastructure/providers/Auth.Providers/booking.provider.dart';
 import '../../infrastructure/providers/Auth.Providers/route.provider.dart';
@@ -13,10 +14,11 @@ class BookingDetailPage extends StatefulWidget {
   final dynamic routes;
   final dynamic vehicles;
   final dynamic routeStop;
+  final int passengerCount;
 
-  const BookingDetailPage(this.routes, this.vehicles, this.routeStop, {Key? key}) : super(key: key);
+  const BookingDetailPage(this.routes, this.vehicles, this.routeStop,this.passengerCount);
 
-  static const Color darkTeal = Color(0xFF165E5A);
+  static  Color darkTeal = ColourHelper.mainThemeColour;
 
   @override
   State<BookingDetailPage> createState() => _BookingDetailPageState();
@@ -37,7 +39,7 @@ class _BookingDetailPageState extends State<BookingDetailPage> {
           "Booking Details",
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
         ),
-        backgroundColor: BookingDetailPage.darkTeal,
+        backgroundColor: ColourHelper.mainThemeColour,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
@@ -131,7 +133,7 @@ class _BookingDetailPageState extends State<BookingDetailPage> {
               children: [
                 Text(
                   '₹ ${widget.vehicles['price']?.toStringAsFixed(2) ?? '0.00'}',
-                  style: const TextStyle(
+                  style:  TextStyle(
                     color: BookingDetailPage.darkTeal,
                     fontWeight: FontWeight.bold,
                     fontSize: 30,
@@ -164,14 +166,21 @@ class _BookingDetailPageState extends State<BookingDetailPage> {
                         ),
                       );
                       debugPrint("Payment Result: $result");
+
                       final uid = FirebaseAuth.instance.currentUser?.uid;
+                      debugPrint("Payment Result: $uid");
                       if (uid != null) {
+                        print(widget.routeStop['fromStop']);
+                        print(widget.routeStop['toStop']);
                         await bookingProvider
                             .fetchTicketBookingResponse(
                           vehicleId: widget.vehicles['id'],
                           fromStopName: routeProvider.getStopIdByName(widget.routeStop['fromStop'])!,
                           toStopName: routeProvider.getStopIdByName(widget.routeStop['toStop'])!,
                           userId: uid,
+                          journeyDate: widget.vehicles['departure'],
+                          passengers: widget.passengerCount,
+                          price:(widget.vehicles['price'] as num).toInt()
                         )
                             .then((_) {
                           Navigator.of(context).pop();
@@ -179,7 +188,7 @@ class _BookingDetailPageState extends State<BookingDetailPage> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => TicketDetailsPage(
-                                  widget.routes, widget.vehicles, widget.routeStop, bookingProvider.qrPayload!),
+                                   widget.vehicles, widget.routeStop, bookingProvider.qrPayload!,widget.passengerCount,null),
                             ),
                           );
                         });

@@ -16,6 +16,9 @@ class BookingService{
     required int fromStopId,
     required int toStopId,
     required String userId,
+    required String journeyDate,
+    required int passengers,
+    required int price
 })async{
 
     try{
@@ -25,6 +28,9 @@ class BookingService{
         'fromStopId': fromStopId,
         'toStopId': toStopId,
         'userId': userId,
+        'passengers': passengers,
+        'journeyDate': journeyDate,
+        'price': price
       });
       final data = response.data as Map<String, dynamic>;
       return data;
@@ -79,7 +85,6 @@ class BookingService{
       final data = response.data as Map<String, dynamic>;
       print(data);
 
-      // Extract tickets list
       if (data.containsKey('tickets') && data['tickets'] is List) {
         return data['tickets'] as List<dynamic>;
       } else {

@@ -30,6 +30,9 @@ class RouteService{
     required String from,
     required String to,
     String? transportType,
+    required String journeyDate,
+    required String passengers
+
   }) async {
     try {
       final response = await _dio.get(
@@ -38,6 +41,8 @@ class RouteService{
           'from': from,
           'to': to,
           if (transportType != null) 'transportType': transportType,
+          'journeyDate':journeyDate,
+          'passengers':passengers
         },
       );
       print(response.data['results']);

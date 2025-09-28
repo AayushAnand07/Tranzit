@@ -23,6 +23,7 @@ class UserService {
     } on DioException catch (e) {
       final errorData = e.response?.data;
       if (errorData is Map<String, dynamic> && errorData.containsKey('error')) {
+        print(errorData['error']);
         throw Exception(errorData['error']);
       } else {
         throw Exception('Failed to create user');
