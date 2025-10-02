@@ -65,25 +65,25 @@ tranzit/
 
 ## 📸 Architecture
 
-<img width="1217" height="1216" alt="Image" src="https://github.com/user-attachments/assets/4a82e013-27f4-483f-85b2-d24e30e961aa" />
+<p align="center"> <img width="80%" alt="Project Architecture" src="./assets/architecture.png" /> </p>
 
 ---
 
 ## 📸 ScreenShots
 <p align="center">
-  <img width="45%" alt="Screenshot 1" src="https://github.com/user-attachments/assets/910013d7-4193-4083-8432-8f73a96e4e84" />
+  <img width="45%" alt="Screenshot 1" src="./assets/Screenshot-1.png" />
   &nbsp;&nbsp;&nbsp;
-  <img width="45%" alt="Screenshot 2" src="https://github.com/user-attachments/assets/b94287cf-bcd2-483b-80f0-4bd9d7a73716" />
+  <img width="45%" alt="Screenshot 2" src="./assets/Screenshot-2.png" />
 </p>
 <p align="center">
-  <img width="45%" alt="Screenshot 3" src="https://github.com/user-attachments/assets/41f0c45a-e44b-4247-8c20-1b6a115642c9" />
+  <img width="45%" alt="Screenshot 3" src="./assets/Screenshot-3.png" />
   &nbsp;&nbsp;&nbsp;
-  <img width="45%" alt="Screenshot 4" src="https://github.com/user-attachments/assets/2cde0ccb-400a-48fb-8104-386b55f46158" />
+  <img width="45%" alt="Screenshot 4" src="./assets/Screenshot-4.png" />
 </p>
 <p align="center">
-  <img width="45%" alt="Screenshot 5" src="https://github.com/user-attachments/assets/03e8387e-8bdb-43da-9c96-0623c9e1a274" />
-   &nbsp;&nbsp;&nbsp;
- <img width="45%"  alt="Screenshot 6" src="https://github.com/user-attachments/assets/d5547d9e-df48-434c-891b-5138da390dfb" />
+  <img width="45%" alt="Screenshot 5" src="./assets/Screenshot-5.png" />
+  &nbsp;&nbsp;&nbsp;
+  <img width="45%" alt="Screenshot 6" src="./assets/Screenshot-6.png" />
 </p>
 
 ---
