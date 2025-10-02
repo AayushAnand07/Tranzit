@@ -93,7 +93,7 @@ class NotificationService {
 
   }
 
-  // Set up message handlers
+
   static void _setupMessageHandlers() {
     print('Setting up message handlers...');
 

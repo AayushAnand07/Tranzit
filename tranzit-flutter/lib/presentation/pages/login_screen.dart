@@ -234,12 +234,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                 ),
               ),
               SizedBox(height: 24),
-              // Continue button
-              // (_inProgress)?CircularProgressIndicator(
-              //   color:Color(0xFF0E4546) ,
-              //   backgroundColor: Colors.white,
-              // ):
-          Consumer<LoginAuthenticationProvider> (
+              Consumer<LoginAuthenticationProvider> (
               builder: (context, snapshot,_) {
                  return (snapshot.isLoading)?CircularProgressIndicator(color: Color(0xFF0E4546),):SizedBox(
                     width: double.infinity,

@@ -72,7 +72,7 @@ class _BookingDetailPageState extends State<BookingDetailPage> {
                   ),
                   const SizedBox(height: 24),
                   const Text(
-                    "Train Routes",
+                    "Route Stops",
                     style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
                   ),
                   const SizedBox(height: 12),

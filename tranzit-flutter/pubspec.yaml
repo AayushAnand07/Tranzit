@@ -58,6 +58,8 @@ dependencies:
   permission_handler: ^11.0.1
   firebase_messaging: ^14.7.10
   flutter_local_notifications: ^18.0.1
+  pdf: ^3.11.3
+  open_filex: ^4.7.0
   #sms_autofill: ^2.4.1
 
 
@@ -90,10 +92,11 @@ flutter:
 
 flutter_native_splash:
   color: "#FFFFFF"
-  image: assets/tranzit_splash.png
+  image: assets/tranzit.png  # Add this line
+
   android_12:
     color: "#FFFFFF"
-    image: assets/tranzit_splash.png
+    image: assets/tranzit.png  # A
   android: true
 
   ios: true

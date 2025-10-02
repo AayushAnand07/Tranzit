@@ -84,7 +84,7 @@ class MyApp extends StatelessWidget {
                 return MaterialApp(
                   debugShowCheckedModeBanner: false,
                   title: 'Tranzit',
-                  theme: appTheme,
+                  theme: appTheme,     
                   home: role == 'admin' ? const AdminScreen() : NewHomeScreen(),
                 );
               },

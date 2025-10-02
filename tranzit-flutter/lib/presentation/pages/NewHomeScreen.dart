@@ -10,8 +10,6 @@ import 'package:tranzit/infrastructure/services/chat.service.dart';
 import 'package:tranzit/presentation/components/speech_input_model.dart';
 import 'package:tranzit/presentation/pages/booking_history_page.dart';
 import 'package:tranzit/presentation/pages/login_screen.dart';
-
-import '../components/popular_route_card.dart';
 import '../components/search_Card.dart';
 
 class NewHomeScreen extends StatefulWidget {
@@ -186,16 +184,16 @@ class _NewHomeScreenState extends State<NewHomeScreen> {
           ),
         ),
 
-        Expanded(
+        const Expanded(
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children:  [
-                const SizedBox(height: 20),
+                 SizedBox(height: 20),
 
                 SearchCard(),
-                PopularRoutesSection(),
-                const SizedBox(height: 30),
+               // PopularRoutesSection(),
+                 SizedBox(height: 30),
               ],
             ),
           ),

@@ -68,7 +68,7 @@ class _ImprovedSpeechWidgetState extends State<ImprovedSpeechWidget>
       bool available = await _speechToText.initialize(
         onStatus: _onSpeechStatus,
         onError: _onSpeechError,
-        debugLogging: false, // Disable debug logging for better performance
+        debugLogging: false,
       );
 
       if (mounted) {
@@ -135,7 +135,7 @@ class _ImprovedSpeechWidgetState extends State<ImprovedSpeechWidget>
       _currentWords = result.recognizedWords;
     });
 
-    // Check word limit
+
     final wordCount = _currentWords.trim().split(' ').length;
     if (wordCount > 20) {
       _stopListening();
@@ -143,7 +143,7 @@ class _ImprovedSpeechWidgetState extends State<ImprovedSpeechWidget>
       return;
     }
 
-    // If final result, process it
+
     if (result.finalResult && _currentWords.trim().isNotEmpty) {
       widget.onSpeechResult(_currentWords);
       setState(() {
@@ -184,7 +184,7 @@ class _ImprovedSpeechWidgetState extends State<ImprovedSpeechWidget>
     try {
       await _speechToText.stop();
     } catch (e) {
-      // Ignore stop errors
+
     }
 
     if (mounted) {

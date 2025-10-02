@@ -68,7 +68,7 @@ class _AdminScreenState extends State<AdminScreen> {
               title: Text(verified
                   ? "✅ Ticket Verified"
                   : "❌ Invalid Ticket"),
-              content: Text("QR Code: ${scanData.code}"),
+              content: Text(""),
               actions: [
                 TextButton(
                   onPressed: () {
@@ -147,7 +147,6 @@ class _AdminScreenState extends State<AdminScreen> {
       body: isScannerOpen
           ? Column(
         children: [
-          // Toggle switch row
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
@@ -186,7 +185,7 @@ class _AdminScreenState extends State<AdminScreen> {
             child: Center(
               child: Text(
                 scanResult != null
-                    ? "Last scanned: $scanResult"
+                    ? ""
                     : "Scan a QR code",
                 style: const TextStyle(fontSize: 18),
               ),

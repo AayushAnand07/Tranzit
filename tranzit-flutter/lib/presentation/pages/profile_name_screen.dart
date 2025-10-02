@@ -21,10 +21,10 @@ class _FirstTimeRegistrationScreenState extends State<FirstTimeRegistrationScree
   @override
   void initState() {
     super.initState();
-    // Clear any previous errors when the screen loads
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final provider = Provider.of<CreateProfileProvider>(context, listen: false);
-      provider.clearError(); // Add this method to your provider
+      provider.clearError(); 
     });
   }
 
@@ -35,19 +35,18 @@ class _FirstTimeRegistrationScreenState extends State<FirstTimeRegistrationScree
     final provider = Provider.of<CreateProfileProvider>(context, listen: false);
 
     try {
-      // Clear any previous errors before making the request
+
       provider.clearError();
 
       await provider.postProfile(uid, name);
 
-      // Only proceed if the request was successful
+
       if (!provider.isLoading && provider.error.isEmpty) {
         await _handleSuccessfulRegistration(name);
       } else if (provider.error.isNotEmpty) {
         _showErrorSnackBar(provider.error);
       }
     } catch (e) {
-      // Handle any unexpected errors
       _showErrorSnackBar('An unexpected error occurred. Please try again.');
     }
   }
@@ -65,7 +64,7 @@ class _FirstTimeRegistrationScreenState extends State<FirstTimeRegistrationScree
           ),
         );
 
-        // Add a small delay to show the success message
+
         await Future.delayed(const Duration(milliseconds: 500));
 
         if (mounted) {
@@ -150,7 +149,6 @@ class _FirstTimeRegistrationScreenState extends State<FirstTimeRegistrationScree
                   ),
                   const SizedBox(height: 40),
 
-                  // Show error message if exists
                   if (provider.error.isNotEmpty) ...[
                     Container(
                       width: double.infinity,
@@ -217,7 +215,7 @@ class _FirstTimeRegistrationScreenState extends State<FirstTimeRegistrationScree
                       textInputAction: TextInputAction.done,
                       onFieldSubmitted: provider.isLoading ? null : (_) => _submit(context),
                       onChanged: (_) {
-                        // Clear error when user starts typing again
+
                         if (provider.error.isNotEmpty) {
                           provider.clearError();
                         }

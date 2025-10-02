@@ -27,7 +27,6 @@ class _SpeechInputModalState extends State<SpeechInputModal>
     super.initState();
     _setupAnimations();
 
-    // Initialize speech when modal opens
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<SpeechProvider>().initializeSpeech();
     });
@@ -64,20 +63,19 @@ class _SpeechInputModalState extends State<SpeechInputModal>
     widget.onSpeechResult(recognizedWords);
     Navigator.of(context).pop();
 
-    // Show success message
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
+      const SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.check_circle, color: Colors.white, size: 20),
-            const SizedBox(width: 8),
+             Icon(Icons.check_circle, color: Colors.white, size: 20),
+             SizedBox(width: 8),
             Expanded(
-              child: Text('Voice query processed: "$recognizedWords"'),
+              child: Text('We will notify once booked'),
             ),
           ],
         ),
         backgroundColor: Colors.green,
-        duration: const Duration(seconds: 3),
+        duration:  Duration(seconds: 3),
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -87,7 +85,6 @@ class _SpeechInputModalState extends State<SpeechInputModal>
   void dispose() {
     _pulseController.dispose();
     _fadeController.dispose();
-    // Reset provider state when modal closes
     context.read<SpeechProvider>().reset();
     super.dispose();
   }
@@ -96,7 +93,7 @@ class _SpeechInputModalState extends State<SpeechInputModal>
   Widget build(BuildContext context) {
     return Consumer<SpeechProvider>(
       builder: (context, speechProvider, child) {
-        // Control pulse animation based on listening state
+
         if (speechProvider.isListening && !_pulseController.isAnimating) {
           _pulseController.repeat(reverse: true);
         } else if (!speechProvider.isListening && _pulseController.isAnimating) {
@@ -104,7 +101,7 @@ class _SpeechInputModalState extends State<SpeechInputModal>
           _pulseController.reset();
         }
 
-        // Show error if exists
+
         if (speechProvider.errorMessage.isNotEmpty) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -127,7 +124,7 @@ class _SpeechInputModalState extends State<SpeechInputModal>
         return FadeTransition(
           opacity: _fadeAnimation,
           child: Container(
-            height: 350,
+            height: MediaQuery.of(context).size.height*0.6,
             width: double.infinity,
             padding: const EdgeInsets.all(24),
             decoration: const BoxDecoration(
@@ -137,7 +134,6 @@ class _SpeechInputModalState extends State<SpeechInputModal>
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Handle bar
                 Container(
                   width: 40,
                   height: 4,
@@ -148,9 +144,9 @@ class _SpeechInputModalState extends State<SpeechInputModal>
                 ),
                 const SizedBox(height: 24),
 
-                // Title
+
                 Text(
-                  'Voice Search',
+                  'Tranzit Voice',
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -159,7 +155,7 @@ class _SpeechInputModalState extends State<SpeechInputModal>
                 ),
                 const SizedBox(height: 8),
 
-                // Status text
+
                 Text(
                   _getStatusText(speechProvider),
                   style: TextStyle(
@@ -170,7 +166,6 @@ class _SpeechInputModalState extends State<SpeechInputModal>
                 ),
                 const SizedBox(height: 24),
 
-                // Speech text display
                 Expanded(
                   child: Container(
                     width: double.infinity,
@@ -197,7 +192,8 @@ class _SpeechInputModalState extends State<SpeechInputModal>
                             Text(
                               speechProvider.isListening
                                   ? 'Listening...'
-                                  : 'Tap the microphone to start speaking',
+                                  : ''
+                                  '"Book bus tickets from Hinjewadi to Wakad for 4 passengers"',
                               style: TextStyle(
                                 fontSize: 16,
                                 color: speechProvider.isListening
@@ -229,11 +225,11 @@ class _SpeechInputModalState extends State<SpeechInputModal>
                 ),
                 const SizedBox(height: 24),
 
-                // Controls
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    // Cancel button
+
                     TextButton(
                       onPressed: () {
                         speechProvider.stopListening();
@@ -245,7 +241,8 @@ class _SpeechInputModalState extends State<SpeechInputModal>
                       ),
                     ),
 
-                    // Mic button with animation
+
+
                     AnimatedBuilder(
                       animation: _pulseAnimation,
                       builder: (context, child) {
@@ -310,7 +307,7 @@ class _SpeechInputModalState extends State<SpeechInputModal>
     if (!provider.speechEnabled) return 'Speech recognition not available';
     if (provider.isListening) return 'Listening... Speak your query now';
     if (provider.recognizedWords.isNotEmpty) return 'Tap "Use Query" to search';
-    return 'Tap microphone to Book your ride in Instant';
+    return 'Tap & Speak  to Book your ride in Instant';
   }
 
   Color _getMicButtonColor(SpeechProvider provider) {

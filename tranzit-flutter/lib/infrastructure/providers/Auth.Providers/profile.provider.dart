@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../services/user.services.dart';
 
@@ -14,7 +13,6 @@ class CreateProfileProvider with ChangeNotifier {
   String _userName = '';
   String get userName => _userName;
 
-  // Add this method to clear errors
   void clearError() {
     _error = '';
     notifyListeners();

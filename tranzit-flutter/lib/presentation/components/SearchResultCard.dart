@@ -62,7 +62,6 @@ class SearchResultCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Route name and price
                   Row(
                     children: [
                       Container(
@@ -90,7 +89,7 @@ class SearchResultCard extends StatelessWidget {
                     ],
                   ),
                   SizedBox(height: 12),
-                  // Journey Date
+
                   if (journeyDate != null)
                     Text(
                       DateFormat('EEE, MMM d, yyyy').format(journeyDate),
@@ -187,7 +186,7 @@ class SearchResultCard extends StatelessWidget {
                   ),
 
                   SizedBox(height: 15),
-                  // Passenger count
+
                   Row(
                     children: [
                       Icon(Icons.people, color: darkTeal, size: 16),

@@ -61,7 +61,6 @@ class _BookingHistoryState extends State<BookingHistory> {
       ),
       body: Column(
         children: [
-          // Switch bar
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
             child: Row(
@@ -98,7 +97,6 @@ class _BookingHistoryState extends State<BookingHistory> {
             ),
           ),
 
-          // Tickets list
           Expanded(
             child: isLoading
                 ? const Center(child: CircularProgressIndicator())
