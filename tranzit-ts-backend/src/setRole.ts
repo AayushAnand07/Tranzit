@@ -10,7 +10,7 @@ async function setRoleByPhoneNumber(phoneNumber: string, role: string) {
   console.log(`Role "${role}" set for user ${phoneNumber}`);
 }
 
-setRoleByPhoneNumber("+917488373111", "admin")
+setRoleByPhoneNumber("+918986653805", "admin")
   .then(() => process.exit(0))
   .catch((err) => {
     console.error(err);
